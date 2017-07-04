@@ -1,0 +1,7 @@
+[package]
+name = "growingtree-maze"
+version = "0.1.0"
+authors = ["shmutalov <shmutalov@gmail.com>"]
+
+[dependencies]
+rand = "0.3"
