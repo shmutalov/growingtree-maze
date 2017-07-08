@@ -71,6 +71,7 @@ fn main() {
 
     let mut maze_group = win.factory.group();
 
+    let mut cube_meshes = Vec::with_capacity(height*width);
     for z in 0..height {
         for x in 0..width {
             if *maze.get_cell(x, z) != CellType::Wall {
@@ -79,12 +80,10 @@ fn main() {
 
             let mut cell_mesh = win.factory.mesh_instance(&cube_mesh, cube_material.clone());
             cell_mesh.set_position([BLOCK_SIZE * x as f32, 0.0, BLOCK_SIZE * z as f32]);
-            maze_group.add(&cell_mesh);
+            cube_meshes.push(cell_mesh);
+            win.scene.add(&cube_meshes[cube_meshes.len()-1]);
         }
     }
-
-    win.scene.add(&maze_group);
-
 
     while win.update() && !three::KEY_ESCAPE.is_hit(&win.input) {
         controls.update(&win.input);
