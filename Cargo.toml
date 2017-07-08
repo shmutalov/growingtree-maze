@@ -5,3 +5,7 @@ authors = ["shmutalov <shmutalov@gmail.com>"]
 
 [dependencies]
 rand = "0.3"
+cgmath = "0.14"
+froggy = "0.3"
+three = "0.2.0"
+mint = "0.4.2"
