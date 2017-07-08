@@ -1,4 +1,5 @@
 extern crate rand;
+extern crate mint;
 extern crate cgmath;
 extern crate three;
 
@@ -8,6 +9,7 @@ use rand::{thread_rng, Rng};
 use growing_tree_maze::{GrowingTreeMaze, CellType};
 use std::env;
 
+use mint::Vector3;
 use cgmath::prelude::*;
 use cgmath::Deg;
 
@@ -20,12 +22,12 @@ fn main() {
     let width: usize = if args.len() > 1 {
         args[1].parse::<usize>().unwrap_or(40)
     } else {
-        20
+        64
     };
     let height: usize = if args.len() > 2 {
         args[2].parse::<usize>().unwrap_or(20)
     } else {
-        20
+        64
     };
 
     let mut maze = GrowingTreeMaze::new(width, height);
@@ -39,12 +41,12 @@ fn main() {
 
     let mut win = three::Window::new("Three-rs maze example by Sherzod Mutalov", "data/shaders");
     let mut cam = win.factory.perspective_camera(75.0, 1.0, 1000.0);
-    cam.set_position([-BLOCK_SIZE*width as f32, 16.0, 0.0]);
-    cam.look_at([64.0, 64.0, 0.0], [0.0, 0.0, 2.0], None);
-    // let mut controls = three::OrbitControls::new(&cam, [0.0, 2.0, -5.0], [BLOCK_SIZE*width as f32/2.0, 64.0, 0.0]);
+    let cam_pos = [BLOCK_SIZE*width as f32 / 2.0, 16.0, BLOCK_SIZE*height as f32 / 2.0];
+    cam.set_position(cam_pos);
+    cam.look_at(cam_pos, [0.0, 0.0, 0.0], Some(Vector3::from([0.0, 1.0, 0.0])));
 
     let mut dir_light = win.factory.directional_light(0xffffff, 0.9);
-    dir_light.look_at([64.0, 64.0, 0.0], [0.0, 0.0, 2.0], None);
+    dir_light.look_at([64.0, 32.0, 0.0], [0.0, 16.0, 0.0], None);
     win.scene.add(&dir_light);
 
     let ground_geometry = three::Geometry::new_plane(BLOCK_SIZE * width as f32,
