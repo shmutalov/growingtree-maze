@@ -92,8 +92,9 @@ fn main() {
         }
     }
 
+    let timer = win.input.time();
     while win.update() && !three::KEY_ESCAPE.is_hit(&win.input) {
-        controls.update(&win.scene, &win.input);
+        controls.update(&win.scene, &win.input, &timer);
 
         win.render(&cam);
     }

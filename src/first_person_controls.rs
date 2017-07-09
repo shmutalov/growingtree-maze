@@ -6,7 +6,7 @@ use mint;
 use num;
 
 use three::{Scene, Object};
-use three::{Input, Button};
+use three::{Input, Button, Timer};
 
 pub struct FirstPersonControls {
     object: Object,
@@ -84,8 +84,8 @@ impl FirstPersonControls {
                 z: up.z,
             }),
 
-            movement_speed: 1000.0,
-            look_speed: 5.0,
+            movement_speed: 0.05,
+            look_speed: 0.5,
 
             look_vertical: true,
             auto_forward: false,
@@ -97,16 +97,16 @@ impl FirstPersonControls {
             height_max: 1.0,
 
             constrain_vertical: true,
-            vertical_min: 1.0,
-            vertical_max: 2.0,
+            vertical_min: 0.0,
+            vertical_max: PI,
 
             auto_speed_factor: 0.0,
 
             mouse_x: 0.0,
             mouse_y: 0.0,
 
-            lat: -150.0,
-            lon: 120.0,
+            lat: 0.0,
+            lon: 0.0,
             phi: 0.0,
             theta: 0.0,
 
@@ -142,14 +142,14 @@ impl FirstPersonControls {
         self.mouse_y = mouse_pos.y;
     }
 
-    pub fn update(&mut self, scene: &Scene, input: &Input) {
+    pub fn update(&mut self, scene: &Scene, input: &Input, timer: &Timer) {
         self.handle_input(&input);
 
         if self.freeze {
             return;
         }
 
-        let delta = input.time().get(&input);
+        let delta = timer.get(&input);
         let mut pos = self.object.sync(&scene).world_transform.position;
 
         if self.height_speed {
@@ -234,18 +234,6 @@ impl FirstPersonControls {
 
         self.object.set_position(pos);
         self.object.look_at(pos, target_pos, self.up);
-
-        println!("F: {} B: {} L: {} R: {} U: {} D: {} MX: {} MY: {} MVSPD: {} LKSPD: {}",
-                 self.move_forward as u8,
-                 self.move_backward as u8,
-                 self.move_left as u8,
-                 self.move_right as u8,
-                 self.move_up as u8,
-                 self.move_down as u8,
-                 self.mouse_x,
-                 self.mouse_y,
-                 actual_move_speed,
-                 actuallook_speed);
     }
 
     fn map_linear(&self, x: f32, a1: f32, a2: f32, b1: f32, b2: f32) -> f32 {
