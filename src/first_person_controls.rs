@@ -12,7 +12,7 @@ pub struct FirstPersonControls {
     object: Object,
     target: Point3<f32>,
     up: Option<mint::Vector3<f32>>,
-    
+
     movement_speed: f32,
     look_speed: f32,
 
@@ -78,10 +78,14 @@ impl FirstPersonControls {
         FirstPersonControls {
             object: object,
             target: tf.into(),
-            up: Some(mint::Vector3{x: up.x, y: up.y, z: up.z}),
-            
-            movement_speed: 1.0,
-            look_speed: 0.005,
+            up: Some(mint::Vector3 {
+                x: up.x,
+                y: up.y,
+                z: up.z,
+            }),
+
+            movement_speed: 1000.0,
+            look_speed: 5.0,
 
             look_vertical: true,
             auto_forward: false,
@@ -92,17 +96,17 @@ impl FirstPersonControls {
             height_min: 0.0,
             height_max: 1.0,
 
-            constrain_vertical: false,
-            vertical_min: 0.0,
-            vertical_max: PI,
+            constrain_vertical: true,
+            vertical_min: 1.0,
+            vertical_max: 2.0,
 
             auto_speed_factor: 0.0,
 
             mouse_x: 0.0,
             mouse_y: 0.0,
 
-            lat: 0.0,
-            lon: 0.0,
+            lat: -150.0,
+            lon: 120.0,
             phi: 0.0,
             theta: 0.0,
 
@@ -192,7 +196,7 @@ impl FirstPersonControls {
         pos.x += translate_x;
         pos.y += translate_y;
         pos.z += translate_z;
-        
+
         let mut actuallook_speed = delta * self.look_speed;
 
         if !self.active_look {
@@ -218,7 +222,11 @@ impl FirstPersonControls {
             self.phi = self.map_linear(self.phi, 0.0, PI, self.vertical_min, self.vertical_max);
         }
 
-        let mut target_pos = mint::Point3{x: self.target.x, y: self.target.y, z: self.target.z};
+        let mut target_pos = mint::Point3 {
+            x: self.target.x,
+            y: self.target.y,
+            z: self.target.z,
+        };
 
         target_pos.x = pos.x + 100.0 * self.phi.sin() * self.theta.cos();
         target_pos.y = pos.y + 100.0 * self.phi.cos();
@@ -227,10 +235,20 @@ impl FirstPersonControls {
         self.object.set_position(pos);
         self.object.look_at(pos, target_pos, self.up);
 
-        println!("{:?}", pos);
+        println!("F: {} B: {} L: {} R: {} U: {} D: {} MX: {} MY: {} MVSPD: {} LKSPD: {}",
+                 self.move_forward as u8,
+                 self.move_backward as u8,
+                 self.move_left as u8,
+                 self.move_right as u8,
+                 self.move_up as u8,
+                 self.move_down as u8,
+                 self.mouse_x,
+                 self.mouse_y,
+                 actual_move_speed,
+                 actuallook_speed);
     }
 
-    fn map_linear (&self, x: f32, a1: f32, a2: f32, b1: f32, b2: f32) -> f32 {
-		b1 + ( x - a1 ) * ( b2 - b1 ) / ( a2 - a1 )
-	}
+    fn map_linear(&self, x: f32, a1: f32, a2: f32, b1: f32, b2: f32) -> f32 {
+        b1 + (x - a1) * (b2 - b1) / (a2 - a1)
+    }
 }

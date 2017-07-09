@@ -45,7 +45,7 @@ fn main() {
     let cam = win.factory.perspective_camera(75.0, 1.0, 1000.0);
     win.scene.add(&cam);
     let cam_pos = [BLOCK_SIZE * width as f32 / 2.0, 16.0, BLOCK_SIZE * height as f32 / 2.0];
-    
+
     let mut controls = FirstPersonControls::new(&cam, cam_pos, [0.0, 0.0, 0.0]);
 
     let mut dir_light = win.factory.directional_light(0xffffff, 0.9);
