@@ -18,7 +18,6 @@ pub struct FirstPersonControls {
 
     look_vertical: bool,
     auto_forward: bool,
-    // invertVertical: bool;
     active_look: bool,
 
     height_speed: bool,
@@ -86,7 +85,6 @@ impl FirstPersonControls {
 
             look_vertical: true,
             auto_forward: false,
-            // invertVertical: false;
             active_look: true,
 
             height_speed: false,
@@ -228,6 +226,8 @@ impl FirstPersonControls {
 
         self.object.set_position(pos);
         self.object.look_at(pos, target_pos, self.up);
+
+        println!("{:?}", pos);
     }
 
     fn map_linear (&self, x: f32, a1: f32, a2: f32, b1: f32, b2: f32) -> f32 {

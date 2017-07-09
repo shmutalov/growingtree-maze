@@ -20,6 +20,7 @@ pub struct GrowingTreeMaze {
     grid: Vec<Vec<CellType>>,
 }
 
+#[allow(dead_code)]
 impl GrowingTreeMaze {
     pub fn new(width: usize, height: usize) -> GrowingTreeMaze {
         let mut v: Vec<Vec<CellType>> = Vec::with_capacity(height);
