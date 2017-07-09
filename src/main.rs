@@ -2,14 +2,17 @@ extern crate rand;
 extern crate mint;
 extern crate cgmath;
 extern crate three;
+extern crate glutin;
+extern crate num;
 
-pub mod growing_tree_maze;
+mod growing_tree_maze;
+mod first_person_controls;
 
 use rand::{thread_rng, Rng};
 use growing_tree_maze::{GrowingTreeMaze, CellType};
+use first_person_controls::FirstPersonControls;
 use std::env;
 
-use mint::Vector3;
 use cgmath::prelude::*;
 use cgmath::Deg;
 
@@ -22,12 +25,12 @@ fn main() {
     let width: usize = if args.len() > 1 {
         args[1].parse::<usize>().unwrap_or(40)
     } else {
-        64
+        32
     };
     let height: usize = if args.len() > 2 {
         args[2].parse::<usize>().unwrap_or(20)
     } else {
-        64
+        32
     };
 
     let mut maze = GrowingTreeMaze::new(width, height);
@@ -40,10 +43,10 @@ fn main() {
     maze.print();
 
     let mut win = three::Window::new("Three-rs maze example by Sherzod Mutalov", "data/shaders");
-    let mut cam = win.factory.perspective_camera(75.0, 1.0, 1000.0);
-    let cam_pos = [BLOCK_SIZE*width as f32 / 2.0, 16.0, BLOCK_SIZE*height as f32 / 2.0];
-    cam.set_position(cam_pos);
-    cam.look_at(cam_pos, [0.0, 0.0, 0.0], Some(Vector3::from([0.0, 1.0, 0.0])));
+    let cam = win.factory.perspective_camera(75.0, 1.0, 1000.0);
+    let cam_pos = [BLOCK_SIZE * width as f32 / 2.0, 16.0, BLOCK_SIZE * height as f32 / 2.0];
+    
+    let mut controls = FirstPersonControls::new(&cam, cam_pos, [0.0, 0.0, 0.0]);
 
     let mut dir_light = win.factory.directional_light(0xffffff, 0.9);
     dir_light.look_at([64.0, 32.0, 0.0], [0.0, 16.0, 0.0], None);
@@ -59,7 +62,7 @@ fn main() {
 
     let angle = Deg(-90.0);
     let q = cgmath::Quaternion::from_angle_x(angle);
-    
+
     ground_mesh.set_orientation([q.v.x, q.v.y, q.v.z, q.s]);
     ground_mesh.set_position([0.0, 0.0, 0.0]);
     ground_mesh.set_scale(10.0);
@@ -75,7 +78,7 @@ fn main() {
 
     // let mut maze_group = win.factory.group();
 
-    let mut cube_meshes = Vec::with_capacity(height*width);
+    let mut cube_meshes = Vec::with_capacity(height * width);
     for z in 0..height {
         for x in 0..width {
             if *maze.get_cell(x, z) != CellType::Wall {
@@ -83,14 +86,16 @@ fn main() {
             }
 
             let mut cell_mesh = win.factory.mesh_instance(&cube_mesh, cube_material.clone());
-            cell_mesh.set_position([BLOCK_SIZE * x as f32, BLOCK_SIZE/2.0, BLOCK_SIZE * z as f32]);
+            cell_mesh.set_position([BLOCK_SIZE * x as f32,
+                                    BLOCK_SIZE / 2.0,
+                                    BLOCK_SIZE * z as f32]);
             cube_meshes.push(cell_mesh);
-            win.scene.add(&cube_meshes[cube_meshes.len()-1]);
+            win.scene.add(&cube_meshes[cube_meshes.len() - 1]);
         }
     }
 
     while win.update() && !three::KEY_ESCAPE.is_hit(&win.input) {
-        // controls.update(&win.input);
+        controls.update(&win.scene, &win.input);
 
         win.render(&cam);
     }
