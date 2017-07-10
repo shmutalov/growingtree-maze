@@ -46,7 +46,7 @@ fn main() {
     win.scene.add(&cam);
     let cam_pos = [BLOCK_SIZE * width as f32 / 2.0, 16.0, BLOCK_SIZE * height as f32 / 2.0];
 
-    let mut controls = FirstPersonControls::new(&cam, cam_pos, [0.0, 0.0, 0.0]);
+    let mut controls = FirstPersonControls::new(&cam, cam_pos);
 
     let mut dir_light = win.factory.directional_light(0xffffff, 0.9);
     dir_light.look_at([64.0, 32.0, 0.0], [0.0, 16.0, 0.0], None);
@@ -94,7 +94,7 @@ fn main() {
 
     let timer = win.input.time();
     while win.update() && !three::KEY_ESCAPE.is_hit(&win.input) {
-        controls.update(&win.scene, &win.input, &timer);
+        controls.update(&win.input, &timer);
 
         win.render(&cam);
     }
